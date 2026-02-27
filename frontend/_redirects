@@ -1,0 +1,2 @@
+# Fallback Pages rule: valid external redirect (Cloudflare rejects absolute 200 rewrites)
+/api/* https://api.example.com/api/:splat 302

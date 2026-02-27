@@ -4,7 +4,7 @@ This repository now supports **Cloudflare Pages for frontend hosting** and proxi
 
 ## What Cloudflare Pages hosts
 - Static frontend from `frontend/`.
-- API calls are routed through `frontend/_redirects` using an external redirect.
+- API calls are routed through `frontend/_redirects`.
 
 ## 1) Deploy backend first
 Cloudflare Pages cannot run this Python FastAPI backend directly.
@@ -32,7 +32,7 @@ In Cloudflare Dashboard:
 ## 4) Validate deployment
 After deploy:
 - Open site root (`/`) and ensure health widget checks `/api/v1/health`.
-- Open `/api/v1/openapi.json` via Pages domain to verify redirect to backend works.
+- Open `/api/v1/openapi.json` via Pages domain to verify proxy works.
 
 ## 5) Optional custom domain
 Attach your domain in Pages and keep Cloudflare proxy enabled.
@@ -40,8 +40,3 @@ Attach your domain in Pages and keep Cloudflare proxy enabled.
 ## Important
 - `frontend/_redirects` currently uses `https://api.example.com` placeholder and must be replaced.
 - Keep CORS strict on backend for your Pages domain.
-
-
-## Cloudflare constraint
-Cloudflare rejects `_redirects` entries that use `200` proxy rewrites to absolute URLs.
-Use `301`/`302` for absolute external API targets, or implement a Worker route for true proxy behavior.

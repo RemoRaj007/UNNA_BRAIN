@@ -31,8 +31,9 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--cov=app/services --cov-report=term-missing --cov-fail-under=70"
+addopts = "--cov=app.services --cov-report=term-missing --cov-fail-under=70"
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 110

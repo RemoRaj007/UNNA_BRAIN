@@ -4,7 +4,7 @@ This repository now supports **Cloudflare Pages for frontend hosting** and proxi
 
 ## What Cloudflare Pages hosts
 - Static frontend from `frontend/`.
-- API calls are routed by `frontend/_worker.js` (Worker-based redirect/proxy entrypoint).
+- API calls are routed through `frontend/_redirects`.
 
 ## 1) Deploy backend first
 Cloudflare Pages cannot run this Python FastAPI backend directly.
@@ -14,11 +14,10 @@ Deploy API separately (Cloud Run / Fly / Render / VM) and get a URL like:
 The API in this repo serves routes under `/api/v1/*` from `app/main.py`.
 
 ## 2) Configure API proxy for Pages
-Set `API_ORIGIN` in `wrangler.toml` (or in Cloudflare env vars):
+Edit `frontend/_redirects`:
 
-```toml
-[vars]
-API_ORIGIN = "https://api.your-domain.com"
+```txt
+/api/* https://api.your-domain.com/api/:splat 200
 ```
 
 ## 3) Create Cloudflare Pages project
@@ -33,25 +32,11 @@ In Cloudflare Dashboard:
 ## 4) Validate deployment
 After deploy:
 - Open site root (`/`) and ensure health widget checks `/api/v1/health`.
-- Open `/api/v1/openapi.json` via Pages domain to verify redirect to backend works.
+- Open `/api/v1/openapi.json` via Pages domain to verify proxy works.
 
 ## 5) Optional custom domain
 Attach your domain in Pages and keep Cloudflare proxy enabled.
 
 ## Important
-- `API_ORIGIN` currently uses `https://api.example.com` placeholder and must be replaced.
+- `frontend/_redirects` currently uses `https://api.example.com` placeholder and must be replaced.
 - Keep CORS strict on backend for your Pages domain.
-
-
-## Cloudflare constraint
-This setup avoids `_redirects` validation pitfalls by routing `/api/*` in `frontend/_worker.js`.
-
-
-## Fallback `_redirects`
-A valid fallback `_redirects` file is included for Pages validation compatibility:
-
-```txt
-/api/* https://api.example.com/api/:splat 302
-```
-
-Do not use `200` with absolute URLs.

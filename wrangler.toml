@@ -1,9 +1,5 @@
-name = "unna-brain"
+name = "unna-brain-pages"
 compatibility_date = "2026-02-27"
-main = "frontend/_worker.js"
 
 [assets]
 directory = "frontend"
-
-[vars]
-API_ORIGIN = "https://api.example.com"

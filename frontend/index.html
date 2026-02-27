@@ -29,7 +29,7 @@
       <h2>Notes</h2>
       <ul>
         <li>Pages hosts static frontend assets only.</li>
-        <li><code>/api/*</code> is routed by <code>frontend/_worker.js</code> to your deployed FastAPI service.</li>
+        <li><code>/api/*</code> is proxied to your deployed FastAPI service via <code>frontend/_redirects</code>.</li>
       </ul>
     </main>
 

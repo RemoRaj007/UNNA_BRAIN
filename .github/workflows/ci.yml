@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+      - name: Lint
+        run: ruff check app tests
+      - name: Type check
+        run: mypy app
+      - name: Unit tests
+        run: pytest
+      - name: Dependency vulnerability scan
+        run: |
+          pip install pip-audit
+          # Temporary exception for CVE-2024-23342 (ecdsa): no upstream fixed release yet.
+          # Keep auditing all other packages.
+          pip-audit --ignore-vuln CVE-2024-23342
+      - name: Docker build
+        run: docker build -t unna-brain-api .

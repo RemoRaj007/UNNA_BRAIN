@@ -1,0 +1,5 @@
+name = "unna-brain-pages"
+compatibility_date = "2026-02-27"
+
+[assets]
+directory = "frontend"

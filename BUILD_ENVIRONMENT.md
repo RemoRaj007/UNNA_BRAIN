@@ -434,6 +434,219 @@ docker-compose exec api alembic revision --autogenerate -m "migration name"
 
 ---
 
+## API Testing
+
+### Interactive Documentation
+
+FastAPI automatically generates interactive API documentation. After starting the backend:
+
+```bash
+# Start backend if not already running
+docker-compose up -d
+
+# Access interactive docs
+open http://localhost:8000/api/v1/docs          # Swagger UI
+open http://localhost:8000/api/v1/redoc         # ReDoc
+curl http://localhost:8000/api/v1/openapi.json  # OpenAPI spec
+```
+
+### Testing with cURL
+
+```bash
+# Health check
+curl http://localhost:8000/api/v1/health
+
+# List reports
+curl http://localhost:8000/api/v1/reports
+
+# Upload file
+curl -X POST http://localhost:8000/api/v1/upload \
+  -F "file=@data.xlsx" \
+  -F "description=Test upload"
+
+# Create report
+curl -X POST http://localhost:8000/api/v1/reports \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "My Report",
+    "description": "Test report",
+    "file_ids": ["file-123"],
+    "analysis_type": "financial"
+  }'
+
+# Get dashboard
+curl http://localhost:8000/api/v1/dashboard
+```
+
+### Testing with Postman
+
+1. **Import Collection:**
+   - Open Postman
+   - Click **Import** → **File** → Select `postman-collection.json`
+
+2. **Configure Variables:**
+   - Click **Environment** (top right)
+   - Create new environment or use default
+   - Set `base_url` to `http://localhost:8000/api/v1`
+   - Set `token` if authentication is enabled
+
+3. **Use Requests:**
+   - Select any endpoint from the imported collection
+   - Click **Send**
+   - Review response in Postman
+
+### Testing with Pytest
+
+```bash
+# Install test dependencies (if not already installed)
+pip install pytest pytest-asyncio httpx
+
+# Run all API tests
+npm run backend-test
+
+# Or run pytest directly
+pytest tests/test_api_endpoints.py -v
+
+# Run specific test
+pytest tests/test_api_endpoints.py::test_health_check -v
+
+# Run tests with coverage
+pytest tests/ --cov=app --cov-report=html
+
+# Run tests for specific feature
+pytest tests/test_api_endpoints.py -k "upload" -v
+```
+
+### Complete Workflow Example
+
+```bash
+# 1. Verify backend is running
+curl http://localhost:8000/api/v1/health
+
+# 2. Upload a file
+UPLOAD_RESPONSE=$(curl -s -X POST http://localhost:8000/api/v1/upload \
+  -F "file=@sample.csv")
+FILE_ID=$(echo $UPLOAD_RESPONSE | grep -o '"file_id":"[^"]*' | cut -d'"' -f4)
+echo "Uploaded file ID: $FILE_ID"
+
+# 3. Create a report
+REPORT_RESPONSE=$(curl -s -X POST http://localhost:8000/api/v1/reports \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"title\": \"Test Report\",
+    \"file_ids\": [\"$FILE_ID\"],
+    \"analysis_type\": \"financial\"
+  }")
+REPORT_ID=$(echo $REPORT_RESPONSE | grep -o '"id":"[^"]*' | cut -d'"' -f4)
+echo "Created report ID: $REPORT_ID"
+
+# 4. Get report details
+curl -s http://localhost:8000/api/v1/reports/$REPORT_ID | jq '.'
+
+# 5. Check dashboard
+curl -s http://localhost:8000/api/v1/dashboard | jq '.summary'
+```
+
+### Frontend API Client
+
+Test the JavaScript API client from `frontend/api-client.js`:
+
+```javascript
+import { apiClient } from './frontend/api-client.js';
+
+// Check API is working
+const health = await apiClient.checkHealth();
+console.log('API Status:', health);
+
+// List reports
+const reports = await apiClient.getReports({ limit: 10 });
+console.log('Reports:', reports);
+
+// Upload file
+const fileInput = document.getElementById('file-input');
+const uploadResult = await apiClient.uploadFile(fileInput.files[0], 'Test file');
+console.log('Uploaded:', uploadResult);
+
+// Create report
+const newReport = await apiClient.createReport({
+  title: 'My Analysis',
+  file_ids: [uploadResult.file_id],
+  analysis_type: 'financial'
+});
+console.log('Report created:', newReport);
+
+// Get dashboard
+const dashboard = await apiClient.getDashboard({ period: 'month' });
+console.log('Dashboard:', dashboard);
+```
+
+### Testing Authentication
+
+**With AUTH_ENABLED=false (development default):**
+
+All requests automatically get a test user. No authentication header needed:
+
+```bash
+curl http://localhost:8000/api/v1/reports
+# Works without Authorization header
+```
+
+**With AUTH_ENABLED=true (production):**
+
+Get a token first, then use it in requests:
+
+```bash
+# Get token
+TOKEN_RESPONSE=$(curl -s -X POST http://localhost:8000/api/v1/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user@example.com",
+    "password": "password123"
+  }')
+TOKEN=$(echo $TOKEN_RESPONSE | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+
+# Use token in requests
+curl -H "Authorization: Bearer $TOKEN" \
+  http://localhost:8000/api/v1/reports
+```
+
+### Common Testing Scenarios
+
+**Test 1: File Upload & Report Creation**
+```bash
+# Upload CSV file
+FILE_ID=$(curl -s -X POST http://localhost:8000/api/v1/upload \
+  -F "file=@data.csv" | jq -r '.file_id')
+
+# Create report from uploaded file
+curl -X POST http://localhost:8000/api/v1/reports \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"Report\",\"file_ids\":[\"$FILE_ID\"]}"
+```
+
+**Test 2: Verify Role-Based Access**
+```bash
+# This should work (or work differently based on AUTH_ENABLED)
+curl http://localhost:8000/api/v1/admin/status
+
+# Check response - will be 401/403 if role insufficient
+```
+
+**Test 3: Error Handling**
+```bash
+# Test missing required fields
+curl -X POST http://localhost:8000/api/v1/reports \
+  -H "Content-Type: application/json" \
+  -d '{}'
+# Expected: 400 or 422 error
+
+# Test invalid endpoint
+curl http://localhost:8000/api/v1/invalid
+# Expected: 404 Not Found
+```
+
+---
+
 ## Environment Configuration
 
 ### Configuration File Hierarchy

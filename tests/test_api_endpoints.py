@@ -12,7 +12,6 @@ Usage:
 import pytest
 import httpx
 import asyncio
-from pathlib import Path
 from io import BytesIO
 
 # Test configuration

@@ -1,0 +1,36 @@
+# Cloudflare Pages Assets Ignore File
+# Prevents sensitive files from being uploaded as public assets
+
+# Worker scripts (not for static Pages hosting)
+_worker.js
+_worker.ts
+_middleware.js
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# Version control
+.git/
+.gitignore
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build artifacts and cache
+.cache/
+dist/
+build/
+*.map
+
+# IDE and OS files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

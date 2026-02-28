@@ -1,0 +1,32 @@
+{
+  "name": "unna-brain",
+  "version": "0.1.0",
+  "description": "UNNA Brain - Social Media Analytics Platform",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler pages deploy frontend",
+    "dev": "npm run verify && npm run backend-dev",
+    "verify": "node scripts/verify-environment.js",
+    "backend-dev": "docker-compose up -d db api",
+    "backend-down": "docker-compose down",
+    "backend-logs": "docker-compose logs -f api",
+    "backend-test": "docker-compose exec api pytest --cov=app.services tests/",
+    "backend-lint": "docker-compose exec api ruff check app tests",
+    "backend-type": "docker-compose exec api mypy app"
+  },
+  "keywords": [
+    "social-media",
+    "analytics",
+    "fastapi",
+    "cloudflare"
+  ],
+  "author": "UNNA Team",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.69.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

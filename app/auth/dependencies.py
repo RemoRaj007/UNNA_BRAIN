@@ -4,14 +4,30 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.auth.jwt import AuthError, decode_and_validate_token
+from app.core.config import get_settings
 from app.schemas.auth import CurrentUser
 
-bearer_scheme = HTTPBearer(auto_error=True)
+# Make bearer scheme optional so it doesn't fail when AUTH_ENABLED=false
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
 ) -> CurrentUser:
+    settings = get_settings()
+
+    # If authentication is disabled, return a test user with all roles
+    if not settings.auth_enabled:
+        return CurrentUser(
+            sub='test-user',
+            roles=['Analyst', 'Admin'],
+            email='test@example.com'
+        )
+
+    # Authentication is enabled, validate JWT token
+    if credentials is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Missing authorization token')
+
     token = credentials.credentials
     try:
         payload = await decode_and_validate_token(token)

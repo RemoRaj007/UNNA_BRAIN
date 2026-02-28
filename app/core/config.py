@@ -13,6 +13,9 @@ class Settings(BaseSettings):
 
     cors_allowed_origins: list[str] = Field(default_factory=lambda: ['http://localhost:3000'])
 
+    # Authentication
+    auth_enabled: bool = Field(default=False, description='Enable JWT authentication enforcement')
+
     database_url: str = Field(default='postgresql+asyncpg://postgres:postgres@db:5432/unna_brain')
 
     oidc_issuer: str = Field(default='https://login.microsoftonline.com/common/v2.0')

@@ -2,50 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>UNNA Brain</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 0; padding: 2rem; background: #f7fbff; color: #102a43; }
-      .card { max-width: 860px; margin: 0 auto; background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 5px 25px rgba(16,42,67,.12); }
-      h1 { margin-top: 0; }
-      code { background: #eef4ff; padding: .15rem .35rem; border-radius: 6px; }
-      .ok { color: #067647; }
-      .bad { color: #b42318; }
-      .muted { color: #486581; }
-      a { color: #0b63ce; }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UNNA Brain - Document Analysis Platform</title>
   </head>
   <body>
-    <main class="card">
-      <h1>UNNA Brain</h1>
-      <p class="muted">Cloudflare Pages frontend connected to the FastAPI backend.</p>
-
-      <h2>Backend health</h2>
-      <p id="health">Checking <code>/api/v1/health</code> ...</p>
-
-      <h2>API docs</h2>
-      <p><a href="/api/v1/openapi.json" target="_blank" rel="noopener">OpenAPI JSON</a></p>
-
-      <h2>Notes</h2>
-      <ul>
-        <li>Pages hosts static frontend assets only.</li>
-        <li><code>/api/*</code> is proxied to your deployed FastAPI service via <code>frontend/_redirects</code>.</li>
-      </ul>
-    </main>
-
-    <script>
-      async function checkHealth() {
-        const target = document.getElementById('health');
-        try {
-          const res = await fetch('/api/v1/health', { method: 'GET' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const data = await res.json();
-          target.innerHTML = `<span class="ok">Healthy:</span> ${JSON.stringify(data)}`;
-        } catch (error) {
-          target.innerHTML = `<span class="bad">Unavailable:</span> ${error.message}`;
-        }
-      }
-      checkHealth();
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>

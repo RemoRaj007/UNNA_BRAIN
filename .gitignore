@@ -55,3 +55,10 @@ dist/
 
 # Project-specific
 *.log
+
+
+# Exception: Include built frontend dist for deployment
+!frontend/dist/
+frontend/dist/**/*.js
+frontend/dist/**/*.css
+frontend/dist/index.html

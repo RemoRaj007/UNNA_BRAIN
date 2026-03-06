@@ -1,0 +1,5 @@
+# Proxy API requests to FastAPI backend
+/api/* https://api.example.com/api/:splat 200
+
+# SPA catch-all: serve index.html for all non-file routes (React Router)
+/* /index.html 200

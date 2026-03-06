@@ -1,2 +1,9 @@
+# Block access to source files
+/src/* /404 404
+/src /404 404
+
+# Catch-all: serve index.html for SPA routing
+/* /index.html 200
+
 # API proxy - uncomment and set your backend URL when deployed:
 # /api/* https://YOUR-BACKEND-URL.com/api/:splat 200

@@ -137,6 +137,8 @@ DELETE /api/v1/reports/{id}        # Delete report
 GET    /api/v1/dashboard           # Get dashboard data
 GET    /api/v1/admin/status        # Admin status
 GET    /api/v1/admin/users         # List users
+GET    /api/v1/ai/providers        # List configured LLM providers
+POST   /api/v1/ai/generate         # Generate insights via LLM provider
 ```
 
 ### Testing the API
@@ -201,6 +203,30 @@ const newReport = await apiClient.post('/reports', {
   title: 'My Report',
   file_ids: ['file-123']
 });
+```
+
+
+### LLM Provider API Keys (Optional)
+
+To use the AI generation APIs, set one or more provider keys in your environment:
+
+```env
+OPENAI_API_KEY=...
+GROQ_API_KEY=...
+OPENROUTER_API_KEY=...
+ANTHROPIC_API_KEY=...
+GEMINI_API_KEY=...
+```
+
+Example:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/ai/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "provider": "groq",
+    "prompt": "Summarize these social media trends for an executive report"
+  }'
 ```
 
 ### Running Tests

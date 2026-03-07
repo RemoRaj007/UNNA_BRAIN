@@ -10,6 +10,7 @@ from app.services.report_service import summary_stats
 router = APIRouter(prefix='/dashboard', tags=['dashboard'])
 
 
+@router.get('', response_model=DashboardSummary)
 @router.get('/summary', response_model=DashboardSummary)
 async def dashboard_summary(
     user: CurrentUser = Depends(require_roles('Analyst', 'Admin')),

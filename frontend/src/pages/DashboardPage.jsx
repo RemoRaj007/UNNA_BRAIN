@@ -6,26 +6,34 @@ import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
+const DEMO_STATS = {
+  total_uploads: 156,
+  total_reports: 42,
+  completed_reports: 38,
+  failed_reports: 2
+}
+
 export default function DashboardPage() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [usingMockData, setUsingMockData] = useState(false)
 
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/v1/dashboard/summary')
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+
+      if (!response.ok) {
+        setStats(DEMO_STATS)
+        setUsingMockData(true)
+        return
       }
-    } catch (error) {
-      console.error('Failed to fetch stats:', error)
-      // Mock data for demo
-      setStats({
-        total_uploads: 156,
-        total_reports: 42,
-        completed_reports: 38,
-        failed_reports: 2
-      })
+
+      const data = await response.json()
+      setStats(data)
+      setUsingMockData(false)
+    } catch {
+      setStats(DEMO_STATS)
+      setUsingMockData(true)
     } finally {
       setLoading(false)
     }
@@ -33,7 +41,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchStats()
-    // Refresh every 30 seconds
     const interval = setInterval(fetchStats, 30000)
     return () => clearInterval(interval)
   }, [])
@@ -47,15 +54,19 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back! Here's your overview.</p>
+          <p className="mt-1 text-gray-600">Welcome back! Here's your overview.</p>
+          {usingMockData && (
+            <p className="mt-2 text-sm text-amber-600">
+              Showing demo data because backend stats are unavailable.
+            </p>
+          )}
         </div>
         <Button onClick={fetchStats} variant="secondary" size="sm">
           <RefreshCw size={16} /> Refresh
         </Button>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           label="Total Uploads"
           value={stats?.total_uploads || 0}
@@ -86,12 +97,10 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Charts */}
       <ChartSection />
 
-      {/* Quick Actions */}
       <Card className="p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <a href="/upload">
             <Button>Upload File</Button>

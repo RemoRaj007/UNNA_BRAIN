@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -10,6 +11,14 @@ config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Override sqlalchemy.url from DATABASE_URL env var (Fly.io sets postgres:// scheme)
+_db_url = os.getenv('DATABASE_URL', config.get_main_option('sqlalchemy.url'))
+for _prefix in ('postgres://', 'postgresql://', 'postgresql+asyncpg://'):
+    if _db_url.startswith(_prefix):
+        _db_url = 'postgresql+psycopg2://' + _db_url[len(_prefix):]
+        break
+config.set_main_option('sqlalchemy.url', _db_url)
 
 target_metadata = Base.metadata
 

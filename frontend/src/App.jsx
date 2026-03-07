@@ -6,7 +6,6 @@ import { NotificationProvider } from './context/NotificationContext'
 
 // Pages
 import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import UploadPage from './pages/UploadPage'
 import ReportsPage from './pages/ReportsPage'
@@ -25,7 +24,7 @@ export default function App() {
           <NotificationProvider>
             <Routes>
               {/* Public Routes */}
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<Navigate to="/dashboard" replace />} />
 
               {/* Protected Routes */}
               <Route element={<Layout />}>

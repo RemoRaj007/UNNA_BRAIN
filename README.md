@@ -67,10 +67,10 @@ bash verify-environment.sh
 
 ```bash
 # Terminal 1: Start frontend dev server
-npm run dev
+npm run dev                # Frontend only (no backend required)
 
-# Terminal 2: Backend runs in Docker
-# Check logs with: docker-compose logs -f api
+# Optional Terminal 2: full backend stack
+npm run fullstack-dev      # Runs verify + starts Docker db/api
 ```
 
 6. **Access the application:**
@@ -242,12 +242,13 @@ See `.env.local.example` for all available options.
 
 ```bash
 # Frontend development
-npm run dev              # Start dev server
+npm run dev              # Start frontend-only dev server
 
 # Deployment
 npm run deploy           # Deploy frontend to Cloudflare Pages
 
 # Backend services
+npm run fullstack-dev    # Start backend stack (verify + Docker)
 npm run backend-dev      # Start Docker services
 npm run backend-down     # Stop Docker services
 npm run backend-logs     # View Docker logs

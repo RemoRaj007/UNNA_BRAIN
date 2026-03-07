@@ -5,10 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy": "bash scripts/deploy-pages.sh",
-    "dev": "npm run frontend-dev",
-    "frontend-dev": "npm --prefix frontend run dev -- --host 0.0.0.0 --port 3000",
-    "frontend-preview": "npm --prefix frontend run build && npm --prefix frontend run preview -- --host 0.0.0.0 --port 4173",
-    "fullstack-dev": "npm run verify && npm run backend-dev",
+    "dev": "npm run verify && npm run backend-dev",
     "verify": "node scripts/verify-environment.js",
     "backend-dev": "docker-compose up -d db api",
     "backend-down": "docker-compose down",

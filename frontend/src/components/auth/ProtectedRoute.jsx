@@ -9,8 +9,9 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
     return <LoadingSpinner />
   }
 
+  // Login is disabled: allow all routes in demo/frontend mode.
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    return children
   }
 
   if (requiredRole && (!user?.roles || !user.roles.includes(requiredRole))) {

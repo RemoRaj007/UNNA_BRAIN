@@ -14,7 +14,7 @@ router = APIRouter(prefix='/upload', tags=['upload'])
 
 @router.post('', response_model=FileIdResponse, status_code=status.HTTP_201_CREATED)
 async def upload_file(
-    uploaded_file: UploadFile = File(...),
+    uploaded_file: UploadFile = File(..., alias='file'),
     user: CurrentUser = Depends(require_roles('Analyst', 'Admin')),
     db: AsyncSession = Depends(get_db_session),
 ):

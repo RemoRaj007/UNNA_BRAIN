@@ -85,3 +85,27 @@ async def summary_stats(db: AsyncSession) -> dict[str, int]:
         'completed_reports': completed or 0,
         'failed_reports': failed or 0,
     }
+
+
+async def list_reports(db: AsyncSession, *, skip: int = 0, limit: int = 20, status: str | None = None) -> tuple[list[Report], int]:
+    query = select(Report).order_by(Report.created_at.desc()).offset(skip).limit(limit)
+    count_query = select(func.count(Report.id))
+    if status:
+        query = query.where(Report.status == status)
+        count_query = count_query.where(Report.status == status)
+
+    rows = await db.execute(query)
+    total = await db.scalar(count_query)
+    return list(rows.scalars().all()), int(total or 0)
+
+
+async def update_report_status(db: AsyncSession, report: Report, *, status: str) -> Report:
+    report.status = status
+    await db.commit()
+    await db.refresh(report)
+    return report
+
+
+async def delete_report(db: AsyncSession, report: Report) -> None:
+    await db.delete(report)
+    await db.commit()

@@ -100,7 +100,8 @@ UNNA_BRAIN/
 ├── tests/
 │   └── test_api_endpoints.py # Comprehensive API tests
 ├── scripts/
-│   └── verify-environment.js # Node.js verification
+│   ├── verify-environment.js # Node.js verification
+│   └── check-issues.sh      # Local lint/type/test + issue summary
 ├── docker-compose.yml       # Local development stack
 ├── wrangler.toml           # Cloudflare deployment config
 ├── package.json            # Frontend & scripts
@@ -253,6 +254,7 @@ npm run backend-logs     # View Docker logs
 
 # Testing & verification
 npm run verify           # Run environment verification
+npm run check-issues     # Run best-effort lint/type/test + issue summary
 npm run backend-test     # Run API tests
 npm run backend-lint     # Lint Python code
 npm run backend-type     # Type checking
@@ -319,8 +321,10 @@ curl -X POST /api/v1/auth/token \
 # Deploy frontend
 npm run deploy
 
-# This runs: wrangler pages deploy frontend/
-# Frontend is served from https://your-domain.pages.dev
+# This runs scripts/deploy-pages.sh (build + output validation + deploy)
+# Before deploying, set frontend/_redirects to your backend API domain
+# For a local no-upload check: CLOUDFLARE_DRY_RUN=1 npm run deploy
+# See CLOUDFLARE_PAGES.md for full setup and MIME error troubleshooting
 ```
 
 ### Backend (Docker)

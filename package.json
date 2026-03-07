@@ -4,7 +4,7 @@
   "description": "UNNA Brain - Social Media Analytics Platform",
   "type": "module",
   "scripts": {
-    "deploy": "cd frontend && npm run build && cd .. && wrangler pages deploy frontend/dist"
+    "deploy": "bash scripts/deploy-pages.sh",
     "dev": "npm run verify && npm run backend-dev",
     "verify": "node scripts/verify-environment.js",
     "backend-dev": "docker-compose up -d db api",
@@ -12,7 +12,8 @@
     "backend-logs": "docker-compose logs -f api",
     "backend-test": "docker-compose exec api pytest --cov=app.services tests/",
     "backend-lint": "docker-compose exec api ruff check app tests",
-    "backend-type": "docker-compose exec api mypy app"
+    "backend-type": "docker-compose exec api mypy app",
+    "check-issues": "bash scripts/check-issues.sh"
   },
   "keywords": [
     "social-media",

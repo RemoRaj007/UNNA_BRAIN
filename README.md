@@ -139,7 +139,6 @@ GET    /api/v1/admin/status        # Admin status
 GET    /api/v1/admin/users         # List users
 GET    /api/v1/ai/providers        # List configured LLM providers
 POST   /api/v1/ai/generate         # Generate insights via LLM provider
-GET    /api/v1/public-apis/search  # Search APIs from public-apis catalog
 ```
 
 ### Testing the API

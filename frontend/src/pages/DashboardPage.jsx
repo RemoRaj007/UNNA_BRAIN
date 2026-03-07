@@ -5,6 +5,7 @@ import ChartSection from '../components/dashboard/ChartSection'
 import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import { useAuth } from '../context/AuthContext'
 
 const DEMO_STATS = {
   total_uploads: 156,
@@ -17,10 +18,13 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [usingMockData, setUsingMockData] = useState(false)
+  const { token } = useAuth()
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/v1/dashboard/summary')
+      const response = await fetch('/api/v1/dashboard/summary', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
 
       if (!response.ok) {
         setStats(DEMO_STATS)
@@ -43,7 +47,7 @@ export default function DashboardPage() {
     fetchStats()
     const interval = setInterval(fetchStats, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [token]) // re-fetch when token changes
 
   if (loading) {
     return <LoadingSpinner fullScreen={false} />

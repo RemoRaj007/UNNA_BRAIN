@@ -11,13 +11,31 @@ from app.models.enums import ReportStatus
 from app.services import audit_service, r2_service, report_service, upload_service
 
 
+class FakeScalars:
+    def __init__(self, rows):
+        self._rows = rows
+
+    def all(self):
+        return self._rows
+
+
+class FakeExecuteResult:
+    def __init__(self, rows):
+        self._rows = rows
+
+    def scalars(self):
+        return FakeScalars(self._rows)
+
+
 class FakeDB:
     def __init__(self):
         self.added = []
         self.commits = 0
         self.refreshed = []
+        self.deleted = []
         self.get_map = {}
         self.scalar_values = []
+        self.execute_rows = []
 
     def add(self, obj):
         self.added.append(obj)
@@ -33,6 +51,12 @@ class FakeDB:
 
     async def scalar(self, _query):
         return self.scalar_values.pop(0)
+
+    async def execute(self, _query):
+        return FakeExecuteResult(self.execute_rows)
+
+    async def delete(self, obj):
+        self.deleted.append(obj)
 
 
 class FakeR2:
@@ -244,3 +268,46 @@ async def test_r2_service_methods(monkeypatch):
     assert url == "https://signed"
     assert calls["put"]["Key"] == "k"
     assert calls["get"]["Key"] == "k"
+
+
+@pytest.mark.asyncio
+async def test_list_reports():
+    from app.services.report_service import list_reports
+
+    db = FakeDB()
+    report1 = SimpleNamespace(id=uuid4(), file_id=uuid4(), status='COMPLETED', output_r2_key='k', requested_by='u1')
+    report2 = SimpleNamespace(id=uuid4(), file_id=uuid4(), status='PENDING', output_r2_key=None, requested_by='u2')
+    db.execute_rows = [report1, report2]
+    db.scalar_values = [2]
+
+    reports, total = await list_reports(db, skip=0, limit=20)
+
+    assert len(reports) == 2
+    assert total == 2
+
+
+@pytest.mark.asyncio
+async def test_update_report_status():
+    from app.services.report_service import update_report_status
+
+    db = FakeDB()
+    report = SimpleNamespace(id=uuid4(), status='PENDING')
+
+    updated = await update_report_status(db, report, status='COMPLETED')
+
+    assert updated.status == 'COMPLETED'
+    assert db.commits == 1
+    assert report in db.refreshed
+
+
+@pytest.mark.asyncio
+async def test_delete_report():
+    from app.services.report_service import delete_report
+
+    db = FakeDB()
+    report = SimpleNamespace(id=uuid4())
+
+    await delete_report(db, report)
+
+    assert report in db.deleted
+    assert db.commits == 1

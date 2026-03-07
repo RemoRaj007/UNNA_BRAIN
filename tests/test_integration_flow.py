@@ -45,7 +45,7 @@ def test_upload_and_generate_report_flow(monkeypatch):
         b'Date,Post text,Link,Impressions,Reactions,Comments,Shares\n2026-01-01,test,https://x,1,1,1,1',
         'text/csv',
     )
-    upload_resp = client.post('/api/v1/upload', files={'uploaded_file': file_payload})
+    upload_resp = client.post('/api/v1/upload', files={'file': file_payload})
     assert upload_resp.status_code == 201
 
     file_id = upload_resp.json()['file_id']

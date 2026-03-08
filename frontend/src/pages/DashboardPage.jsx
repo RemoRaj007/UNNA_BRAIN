@@ -6,6 +6,7 @@ import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import { useAuth } from '../context/AuthContext'
+import { apiUrl } from '../utils/apiUrl'
 
 const DEMO_STATS = {
   total_uploads: 156,
@@ -22,7 +23,7 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/v1/dashboard/summary', {
+      const response = await fetch(apiUrl('/api/v1/dashboard/summary'), {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
 

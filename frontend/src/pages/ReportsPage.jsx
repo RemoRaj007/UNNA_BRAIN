@@ -4,6 +4,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner'
 import Button from '../components/common/Button'
 import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
+import { apiUrl } from '../utils/apiUrl'
 
 const STATUS_STYLES = {
   COMPLETED: 'bg-green-100 text-green-800',
@@ -24,7 +25,7 @@ export default function ReportsPage() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/v1/reports?limit=50', {
+      const response = await fetch(apiUrl('/api/v1/reports?limit=50'), {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!response.ok) {
@@ -46,7 +47,7 @@ export default function ReportsPage() {
   const handleDownload = async (reportId) => {
     setDownloadingId(reportId)
     try {
-      const response = await fetch(`/api/v1/reports/${reportId}`, {
+      const response = await fetch(apiUrl(`/api/v1/reports/${reportId}`), {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!response.ok) {

@@ -3,6 +3,7 @@ import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import { Settings, Users, Activity, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { apiUrl } from '../utils/apiUrl'
 
 export default function AdminPage() {
   const [systemStatus, setSystemStatus] = useState(null)
@@ -14,8 +15,8 @@ export default function AdminPage() {
     setLoading(true)
     try {
       const [statusRes, usersRes] = await Promise.all([
-        fetch('/api/v1/admin/status', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/v1/admin/users', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(apiUrl('/api/v1/admin/status'), { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(apiUrl('/api/v1/admin/users'), { headers: { Authorization: `Bearer ${token}` } }),
       ])
 
       if (statusRes.ok) {

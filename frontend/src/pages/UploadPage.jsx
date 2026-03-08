@@ -4,6 +4,7 @@ import Button from '../components/common/Button'
 import { Upload, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
+import { apiUrl } from '../utils/apiUrl'
 
 export default function UploadPage() {
   const [files, setFiles] = useState([])
@@ -30,7 +31,7 @@ export default function UploadPage() {
       formData.append('file', file)
 
       try {
-        const response = await fetch('/api/v1/upload', {
+        const response = await fetch(apiUrl('/api/v1/upload'), {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,

@@ -34,7 +34,7 @@ jobs:
         run: npm run build
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: /api/v1
+          VITE_API_BASE_URL: https://unna-brain.fly.dev
 
       - name: Verify build output
         run: |
@@ -44,9 +44,9 @@ jobs:
           fi
           echo "Build successful. frontend/dist exists."
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: npx wrangler pages deploy frontend/dist --project-name=unna-brain --branch=production
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

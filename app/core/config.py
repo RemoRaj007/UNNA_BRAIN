@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,6 +31,15 @@ class Settings(BaseSettings):
     r2_signed_url_expiry_seconds: int = Field(default=900)
 
     upload_max_size_mb: int = Field(default=20)
+
+    @field_validator('database_url')
+    @classmethod
+    def normalize_db_url(cls, v: str) -> str:
+        if v.startswith('postgres://'):
+            return 'postgresql+asyncpg://' + v[len('postgres://'):]
+        if v.startswith('postgresql://') and '+asyncpg' not in v:
+            return v.replace('postgresql://', 'postgresql+asyncpg://', 1)
+        return v
 
 
 @lru_cache

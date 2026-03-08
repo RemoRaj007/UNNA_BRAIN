@@ -19,7 +19,36 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+      - name: Bootstrap and deploy
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          # Create app if it doesn't exist
+          flyctl apps list | grep -q unna-brain-api || flyctl apps create unna-brain-api
+
+          # Create postgres if it doesn't exist
+          flyctl postgres list | grep -q unna-brain-db || \
+            flyctl postgres create \
+              --name unna-brain-db \
+              --region lax \
+              --vm-size shared-cpu-1x \
+              --volume-size 1 \
+              --yes
+
+          # Attach postgres if DATABASE_URL not yet set
+          flyctl secrets list --app unna-brain-api | grep -q DATABASE_URL || \
+            flyctl postgres attach unna-brain-db --app unna-brain-api
+
+          # Set app secrets (idempotent)
+          flyctl secrets set --app unna-brain-api \
+            AUTH_ENABLED=false \
+            CORS_ALLOWED_ORIGINS='["https://unna-brain.remoraj4.workers.dev","http://localhost:5173"]' \
+            R2_ENDPOINT_URL=https://467622770588fbc9d872cb35762775f4.r2.cloudflarestorage.com \
+            R2_ACCESS_KEY_ID=e735c76f73d4d1e0f10db4b2edcbb894 \
+            R2_SECRET_ACCESS_KEY=f127e44246c2c12b108b8aa05b7ab39489b32e0efa7a6084fcd040d27e3be064 \
+            R2_BUCKET_NAME=unna-brain \
+            R2_REGION=auto \
+            GROQ_API_KEY=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
+
+          # Deploy
+          flyctl deploy --remote-only

@@ -7,41 +7,38 @@ node_modules/
 .env.local
 .env.*
 
-# Build outputs
-dist/
-build/
-*.js.map
-
-# Cache directories
-.npm/
-.yarn/
-.cache/
-
-# IDE specific
+# IDE and editor settings
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Python cache (if any Python files exist in the project)
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Temporary files
-*.tmp
-*.temp
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+htmlcov/
+pytest_cache/
+
+# Package managers
+package-lock.json
+yarn.lock
+
+# Vite specific
+vite.config.js.timestamp*
 ```

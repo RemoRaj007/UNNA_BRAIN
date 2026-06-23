@@ -13,7 +13,7 @@ Deploy backend to a service like Cloud Run / Fly / Render / VM and keep a public
 Update `frontend/_redirects` so API requests are proxied to your backend:
 
 ```txt
-/api/* https://api.your-domain.com/api/:splat 200
+/api/* https://api.your-domain.com/api/:splat 302
 ```
 
 > Replace `api.example.com` with your real backend domain before deploying.
